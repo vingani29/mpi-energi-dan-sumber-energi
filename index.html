@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Media Pembelajaran Interaktif: Energi & Sumber Energi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        kemenag: { green: '#008b4b', light: '#e8f5e9', dark: '#005f33', gold: '#d4af37' }
+                    },
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif'],
+                        arabic: ['Amiri', 'serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { -webkit-tap-highlight-color: transparent; scroll-behavior: smooth; background-color: #f0fdf4; }
+        .glass-panel { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.5); box-shadow: 0 10px 30px rgba(0, 139, 75, 0.1); }
+        .slide-up { animation: slideUp 0.6s ease-out forwards; }
+        .fade-in { animation: fadeIn 0.5s ease-out forwards; }
+        .float-anim { animation: floating 3s ease-in-out infinite; }
+        
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes floating { 0% { transform: translateY(0px); } 50% { transform: translateY(-15px); } 100% { transform: translateY(0px); } }
+        
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #e8f5e9; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #008b4b; border-radius: 10px; }
+        
+        .hidden-section { display: none !important; }
+        .selected-item { border: 2px solid #d4af37; background-color: #fef3c7; transform: scale(1.05); }
+
+        .learning-ticker { position:fixed; left:0; right:0; bottom:0; z-index:90; height:34px; display:flex; align-items:center; overflow:hidden; color:#fff; background:linear-gradient(90deg,#064e3b,#008b4b,#0f766e); border-top:2px solid #d4af37; box-shadow:0 -5px 18px rgba(0,0,0,.14); pointer-events:none; }
+        .ticker-label { flex:0 0 auto; height:100%; display:flex; align-items:center; gap:7px; padding:0 12px; background:#d4af37; color:#173b2b; font-size:11px; font-weight:800; letter-spacing:.08em; }
+        .ticker-window { min-width:0; overflow:hidden; flex:1; }
+        .ticker-track { display:inline-flex; white-space:nowrap; min-width:max-content; animation:tickerMove 34s linear infinite; font-size:12px; font-weight:600; letter-spacing:.02em; }
+        .ticker-track span { padding-right:3rem; }
+        @keyframes tickerMove { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+    </style>
+
+    <style id="ceria-ungu-gradient-theme">
+        :root { --purple-deep:#6d28d9; --purple-mid:#a855f7; --purple-light:#f3e8ff; --purple-pink:#f5d0fe; }
+        html, body { background: linear-gradient(135deg,#f3e8ff 0%,#e9d5ff 38%,#f5d0fe 72%,#ddd6fe 100%) !important; }
+        main, section { background: linear-gradient(135deg,rgba(243,232,255,.97),rgba(221,214,254,.96) 48%,rgba(250,232,255,.97)) !important; }
+        .glass-panel { background: linear-gradient(145deg,rgba(255,255,255,.97),rgba(250,245,255,.96) 55%,rgba(243,232,255,.96)) !important; }
+        button, .btn { transition: filter .2s ease, transform .2s ease; }
+        button:hover, .btn:hover { filter: saturate(1.15) brightness(1.02); transform: translateY(-2px); }
+        .bg-kemenag-green, .bg-amber-500 { background-image:linear-gradient(120deg,#7c3aed,#c026d3) !important; color: white !important;}
+        .text-kemenag-green { color:#7e22ce !important; }
+    </style>
+</head>
+<body class="text-gray-800 antialiased h-screen w-full overflow-hidden flex flex-col relative font-sans">
+
+    <!-- CUSTOM ALERT MODAL -->
+    <div id="customAlert" class="fixed inset-0 z-[100] hidden flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+        <div class="glass-panel p-6 rounded-2xl max-w-sm w-full text-center slide-up">
+            <div id="alertIcon" class="text-4xl mb-3 text-kemenag-green"><i class="fas fa-info-circle"></i></div>
+            <h3 id="alertTitle" class="text-xl font-bold text-gray-800 mb-2">Informasi</h3>
+            <p id="alertMessage" class="text-sm text-gray-600 mb-5">Pesan di sini.</p>
+            <button onclick="closeAlert()" class="bg-kemenag-green text-white px-6 py-2 rounded-full font-semibold transition w-full shadow-lg">Mengerti</button>
+        </div>
+    </div>
+
+    <!-- TICKER -->
+    <div class="learning-ticker">
+        <div class="ticker-label"><i class="fas fa-bolt"></i> JELAJAH ENERGI</div>
+        <div class="ticker-window"><div class="ticker-track"><span>Ayo jelajahi energi! Matahari memberi cahaya dan panas • Hemat energi, jaga bumi!</span><span>Ayo jelajahi energi! Matahari memberi cahaya dan panas • Hemat energi, jaga bumi!</span></div></div>
+    </div>
+    
+    <main class="w-full h-full relative overflow-y-auto pb-12">
+        <!-- SPLASH SCREEN -->
+        <section id="screen-splash" class="absolute inset-0 z-50 flex flex-col items-center justify-center">
+            <div class="float-anim text-center">
+                <div class="text-7xl text-amber-500 mb-4"><i class="fas fa-lightbulb"></i></div>
+                <h1 class="text-3xl font-bold text-purple-deep mb-2">MPI Energi</h1>
+                <p class="text-lg text-purple-700 font-medium">Memuat Aplikasi...</p>
+            </div>
+        </section>
+
+        <!-- LOGIN SCREEN -->
+        <section id="screen-login" class="absolute inset-0 z-40 hidden flex-col items-center justify-center p-4">
+            <div class="glass-panel p-8 rounded-2xl max-w-md w-full shadow-xl fade-in text-center">
+                <i class="fas fa-user-graduate text-5xl text-purple-mid mb-4"></i>
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Identitas Siswa</h2>
+                <input type="text" id="inputNama" placeholder="Nama Lengkap" class="w-full p-3 mb-4 border-2 border-purple-200 rounded-xl focus:outline-none focus:border-purple-500 bg-white">
+                <input type="text" id="inputKelas" placeholder="Kelas" class="w-full p-3 mb-6 border-2 border-purple-200 rounded-xl focus:outline-none focus:border-purple-500 bg-white">
+                <button onclick="startApp()" class="w-full bg-kemenag-green py-3 rounded-xl font-bold text-lg shadow-lg">Mulai Belajar & Bermain <i class="fas fa-arrow-right ml-2"></i></button>
+            </div>
+        </section>
+
+        <!-- MENU SCREEN -->
+        <section id="screen-menu" class="absolute inset-0 z-30 hidden flex-col items-center justify-center p-4">
+            <div class="text-center mb-8 fade-in">
+                <h2 class="text-3xl font-bold text-purple-deep mb-2">Halo, <span id="displayNama">Siswa</span>!</h2>
+                <p class="text-gray-600">Pilih menu di bawah ini untuk memulai petualanganmu.</p>
+            </div>
+            <div class="grid grid-cols-1 gap-4 w-full max-w-sm slide-up">
+                <button onclick="showAlert('Menu Belajar', 'Fitur materi pelajaran akan segera hadir!')" class="glass-panel p-4 rounded-2xl flex items-center justify-between group hover:bg-purple-50 transition cursor-pointer">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 text-xl"><i class="fas fa-book-open"></i></div>
+                        <span class="font-bold text-gray-700 text-lg">Materi Belajar</span>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-400 group-hover:text-purple-500"></i>
+                </button>
+                <button onclick="openQuiz()" class="glass-panel p-4 rounded-2xl flex items-center justify-between group hover:bg-purple-50 transition cursor-pointer">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center text-amber-500 text-xl"><i class="fas fa-gamepad"></i></div>
+                        <span class="font-bold text-gray-700 text-lg">Mulai Kuis</span>
+                    </div>
+                    <i class="fas fa-chevron-right text-gray-400 group-hover:text-amber-500"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- QUIZ SCREEN -->
+        <section id="screen-quiz" class="absolute inset-0 z-30 hidden flex-col items-center p-4 pt-10">
+            <div class="max-w-2xl w-full">
+                <div class="flex justify-between items-center mb-6">
+                    <span class="px-4 py-1 bg-purple-200 text-purple-800 rounded-full font-bold text-sm">Soal <span id="qNumber">1</span>/<span id="qTotal">3</span></span>
+                    <button onclick="backToMenu()" class="text-gray-500 hover:text-red-500"><i class="fas fa-times text-xl"></i></button>
+                </div>
+                
+                <div class="glass-panel p-6 rounded-2xl mb-6 shadow-md slide-up" id="quizContainer">
+                    <h3 id="questionText" class="text-xl font-semibold text-gray-800 mb-6 text-center leading-relaxed">Pertanyaan dimuat disini...</h3>
+                    <div id="optionsContainer" class="flex flex-col gap-3">
+                        <!-- Options injected via JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- RESULT SCREEN -->
+        <section id="screen-result" class="absolute inset-0 z-30 hidden flex-col items-center justify-center p-4">
+            <div class="glass-panel p-8 rounded-3xl max-w-md w-full text-center slide-up">
+                <i class="fas fa-trophy text-6xl text-amber-500 mb-4 float-anim"></i>
+                <h2 class="text-3xl font-bold text-purple-deep mb-2">Kuis Selesai!</h2>
+                <div class="flex justify-center gap-6 my-6">
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-green-500" id="resBenar">0</div>
+                        <div class="text-xs font-semibold text-gray-500 uppercase">Benar</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-3xl font-bold text-red-500" id="resSalah">0</div>
+                        <div class="text-xs font-semibold text-gray-500 uppercase">Salah</div>
+                    </div>
+                </div>
+                <div id="syncStatus" class="mb-6 text-sm font-semibold text-purple-600 bg-purple-100 py-2 px-4 rounded-xl flex items-center justify-center gap-2">
+                    <i class="fas fa-spinner fa-spin"></i> Menyimpan hasil ke database...
+                </div>
+                <button onclick="backToMenu()" class="w-full bg-kemenag-green py-3 rounded-xl font-bold text-lg shadow-lg">Kembali ke Menu Utama</button>
+            </div>
+        </section>
+    </main>
+
+    <!-- SCRIPT UTAMA -->
+    <script>
+        // ==============================================================================
+        // TAUTAN GOOGLE APPS SCRIPT (GAS)
+        // Ganti URL di bawah ini dengan URL Web App hasil deployment Google Apps Script Anda.
+        // ==============================================================================
+        const GAS_URL = "https://script.google.com/macros/s/AKfycbxHdPcfjz18sD4AfSHvu7TODjjy1jo5ZYvmzowwXg63Z-Cl9el_4G-ROV5dEXBMfL5Q/exec"; 
+        
+        // Data Siswa
+        let studentData = { nama: "", kelas: "" };
+        
+        // Data Soal Simulasi
+        const quizData = [
+            {
+                pertanyaan: "Sumber energi terbesar di bumi adalah...",
+                pilihan: ["Bulan", "Bintang", "Matahari", "Listrik"],
+                jawabanBenar: "Matahari"
+            },
+            {
+                pertanyaan: "Benda berikut yang mengubah energi listrik menjadi energi gerak adalah...",
+                pilihan: ["Setrika", "Kipas Angin", "Radio", "Lampu"],
+                jawabanBenar: "Kipas Angin"
+            },
+            {
+                pertanyaan: "Energi yang dihasilkan oleh makanan bagi tubuh manusia disebut energi...",
+                pilihan: ["Kinetik", "Kimia", "Cahaya", "Panas"],
+                jawabanBenar: "Kimia"
+            }
+        ];
+
+        let currentQuestion = 0;
+        let scoreBenar = 0;
+        let scoreSalah = 0;
+        let detailJawaban = [];
+
+        // Inisialisasi
+        setTimeout(() => {
+            document.getElementById('screen-splash').classList.add('hidden-section');
+            document.getElementById('screen-login').classList.remove('hidden');
+            document.getElementById('screen-login').classList.add('flex');
+        }, 2000);
+
+        // Alert System
+        function showAlert(title, message) {
+            document.getElementById('alertTitle').innerText = title;
+            document.getElementById('alertMessage').innerText = message;
+            document.getElementById('customAlert').classList.remove('hidden');
+        }
+        function closeAlert() {
+            document.getElementById('customAlert').classList.add('hidden');
+        }
+
+        // Login System
+        function startApp() {
+            const nama = document.getElementById('inputNama').value.trim();
+            const kelas = document.getElementById('inputKelas').value.trim();
+            
+            if(!nama || !kelas) {
+                showAlert("Perhatian", "Silakan masukkan Nama dan Kelas terlebih dahulu.");
+                return;
+            }
+
+            studentData.nama = nama;
+            studentData.kelas = kelas;
+            document.getElementById('displayNama').innerText = nama;
+            
+            switchScreen('screen-login', 'screen-menu');
+        }
+
+        // Quiz System
+        function openQuiz() {
+            currentQuestion = 0;
+            scoreBenar = 0;
+            scoreSalah = 0;
+            detailJawaban = [];
+            document.getElementById('qTotal').innerText = quizData.length;
+            
+            loadQuestion();
+            switchScreen('screen-menu', 'screen-quiz');
+        }
+
+        function loadQuestion() {
+            const q = quizData[currentQuestion];
+            document.getElementById('qNumber').innerText = currentQuestion + 1;
+            document.getElementById('questionText').innerText = q.pertanyaan;
+            
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+            
+            q.pilihan.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left p-4 rounded-xl border-2 border-purple-100 hover:border-purple-400 hover:bg-purple-50 transition font-medium text-gray-700";
+                btn.innerText = opt;
+                btn.onclick = () => handleAnswer(opt);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function handleAnswer(selectedOption) {
+            const q = quizData[currentQuestion];
+            const isCorrect = (selectedOption === q.jawabanBenar);
+            
+            if(isCorrect) scoreBenar++;
+            else scoreSalah++;
+            
+            detailJawaban.push({
+                soal: q.pertanyaan,
+                jawabanSiswa: selectedOption,
+                status: isCorrect
+            });
+
+            currentQuestion++;
+            
+            if(currentQuestion < quizData.length) {
+                loadQuestion();
+            } else {
+                finishQuiz();
+            }
+        }
+
+        function finishQuiz() {
+            document.getElementById('resBenar').innerText = scoreBenar;
+            document.getElementById('resSalah').innerText = scoreSalah;
+            switchScreen('screen-quiz', 'screen-result');
+            sendDataToGoogleSheets();
+        }
+
+        // BACKEND INTEGRATION
+        async function sendDataToGoogleSheets() {
+            const syncStatus = document.getElementById('syncStatus');
+            syncStatus.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan hasil ke database...';
+            syncStatus.className = "mb-6 text-sm font-semibold text-purple-600 bg-purple-100 py-2 px-4 rounded-xl flex items-center justify-center gap-2";
+            
+            if(GAS_URL === "URL_GAS_ANDA_DISINI") {
+                syncStatus.innerHTML = '<i class="fas fa-exclamation-triangle text-amber-500"></i> URL GAS belum di-setting!';
+                syncStatus.classList.replace('bg-purple-100', 'bg-amber-100');
+                syncStatus.classList.replace('text-purple-600', 'text-amber-700');
+                return;
+            }
+
+            const payload = {
+                type: "submit_quiz",
+                nama: studentData.nama,
+                kelas: studentData.kelas,
+                benar: scoreBenar,
+                salah: scoreSalah,
+                detail: detailJawaban
+            };
+
+            try {
+                // Fetch request diset dengan mode text/plain untuk bypass preflight error CORS standar
+                const response = await fetch(GAS_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify(payload)
+                });
+                
+                const result = await response.json();
+                
+                if(result.status === "success") {
+                    syncStatus.innerHTML = '<i class="fas fa-check-circle text-green-500"></i> Hasil berhasil disimpan!';
+                    syncStatus.classList.replace('bg-purple-100', 'bg-green-100');
+                    syncStatus.classList.replace('text-purple-600', 'text-green-700');
+                } else {
+                    throw new Error("Gagal menyimpan data.");
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                syncStatus.innerHTML = '<i class="fas fa-times-circle text-red-500"></i> Gagal terhubung ke database.';
+                syncStatus.classList.replace('bg-purple-100', 'bg-red-100');
+                syncStatus.classList.replace('text-purple-600', 'text-red-700');
+            }
+        }
+
+        // Navigation
+        function backToMenu() {
+            document.getElementById('screen-quiz').classList.add('hidden');
+            document.getElementById('screen-result').classList.add('hidden');
+            document.getElementById('screen-menu').classList.remove('hidden');
+            document.getElementById('screen-menu').classList.add('flex');
+        }
+
+        function switchScreen(hideId, showId) {
+            document.getElementById(hideId).classList.add('hidden');
+            document.getElementById(hideId).classList.remove('flex');
+            
+            document.getElementById(showId).classList.remove('hidden');
+            document.getElementById(showId).classList.add('flex');
+        }
+    </script>
+</body>
+</html>
